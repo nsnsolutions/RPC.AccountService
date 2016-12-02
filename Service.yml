@@ -1,0 +1,16 @@
+# Here be a service
+---
+name: RPC.AccountService
+version: 0.0.1
+description: A service for authority, authorization and account details.
+
+main: src/index.js
+
+configurations:
+  - name: config
+    watch: true
+    key: /config/services/AccountService
+
+  - name: shared
+    watch: true
+    key: /config/shared
