@@ -3,6 +3,7 @@
     "start": "node_modules/.bin/rpcfw run Service.yml"
   },
   "dependencies": {
+    "async": "^2.1.2",
     "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.1"
   },
   "devDependencies": {

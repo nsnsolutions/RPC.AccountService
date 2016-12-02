@@ -1,32 +1,29 @@
 'use strict';
 
-module.exports = function HelloPlugin(opts) {
+const lib = require('../lib');
 
-    var seneca = this,
-        fixed = opts.fixed;
+module.exports = function Plugin(opts) {
 
-    fixed.assertMember("defaultName", String);
+    var seneca = this;
+    var common = this.common;
 
-    seneca.rpcAdd('role:hello.Pub,cmd:greet.v1', greet_v1);
+    seneca.rpcAdd('role:accountService.Pub,cmd:hello.v1', hello_v1);
 
-    return { name: "HelloPlugin" };
+    return { name: "Plugin" };
 
     // ------------------------------------------------------------------------
 
-    function greet_v1(args, req) {
+    function hello_v1(args, rpcDone) {
 
-        args.ensureExists("name", fixed.defaultName);
-
-        req.success({
-            message: `Hello, ${args.name}!`,
-            details: [
-                "Welcome to rpcfw!",
-                "This is a framework to help you build microservices.",
-                `To get started, open ${__filename} and change this code.`,
-                "Also take a look at the documentation.",
-                "https://github.com/nsnsolutions/rpcfw"
+        var workflow = {
+            name: 'SCH.001',
+            rpcDone: rpcDone,
+            repr: 'empty',
+            tasks: [ 
+                common.pulse
             ]
-        });
+        }
 
+        lib.Executor(workflow).run(args);
     }
 };

@@ -22,11 +22,17 @@ module.exports = function RPC_AccountService(App) {
     // ------------------------------------------------------------------------
 
     function init(bus, conf) {
-        bus.use(services.HelloPlugin, conf);
+
+        var params = {
+        }
+
+        bus.use(services.CommonPlugin, params);
+        bus.use(services.HelloPlugin, params);
+
         bus.rpcClient({ pin: "role:*" });
         bus.rpcServer({ pin: [
-          "role:RPC-AccountService",
-          "role:RPC-AccountService.Pub"
+          "role:accountService",
+          "role:accountService.Pub"
         ]});
     }
 

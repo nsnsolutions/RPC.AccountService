@@ -1,4 +1,4 @@
-# Here be a service
+# Service Configuration File.
 ---
 name: RPC.AccountService
 version: 0.0.1
