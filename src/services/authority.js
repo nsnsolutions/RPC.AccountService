@@ -9,6 +9,7 @@ module.exports = function AuthorityPlugin(opts) {
 
     var seneca = this;
     var common = this.common;
+    var logLevel = opts.logLevel
 
     seneca.rpcAdd('role:accountService.Pub,cmd:getAuthorityFromToken.v1', getAuthorityFromToken_v1);
 
@@ -19,7 +20,7 @@ module.exports = function AuthorityPlugin(opts) {
     function getAuthorityFromToken_v1(args, rpcDone) {
 
         var params = {
-            logLevel: args.get("logLevel"),
+            logLevel: args.get("logLevel", logLevel),
             repr: lib.repr.claimV1,
             name: "Get Authority From Token (v1)",
             code: "AFT01",

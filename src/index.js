@@ -8,13 +8,14 @@ const rpcUtils = require('rpc-utils');
 
 module.exports = function RPC_AccountService(App) {
 
-    // Validate Shared Configs
+    // Validate specific configs
     App.configurations.config.assertMember("sponsorTableName");
     App.configurations.config.assertMember("clientTableName");
 
-    // Validate specific configs
+    // Validate Shared Configs
     App.configurations.shared.assertMember("region");
     App.configurations.shared.assertMember("cacheEndpoint");
+    App.configurations.shared.assertMember("logLevel");
 
     var redisClient = redis.createClient({ url: App.configurations.shared.cacheEndpoint });
     var dynamoClient = new AWS.DynamoDB({ region: App.configurations.shared.region });
@@ -59,7 +60,8 @@ module.exports = function RPC_AccountService(App) {
     function initApp(bus, conf) {
 
         var params = {
-            dynamoCacheClients: dynamoCacheClients
+            dynamoCacheClients: dynamoCacheClients,
+            logLevel: conf.shared.logLevel
         }
 
         bus.use(services.CommonPlugin, params);
