@@ -8,7 +8,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.17.1",
     "redis": "^2.6.3",
-    "rpc-utils": "git://github.com/nsnsolutions/RPC.Utils.git#v0.1.1-alpha",
+    "rpc-utils": "git://github.com/nsnsolutions/RPC.Utils.git#v0.1.2-alpha",
     "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.1",
     "uuid": "^3.0.1"
   },
