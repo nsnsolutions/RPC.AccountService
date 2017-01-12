@@ -42,7 +42,7 @@ module.exports = function RPC_AccountService(App) {
 
         rpcUtils.CachedTable.create(params, (err, tables) => {
             if(err) {
-                console.error("FATAL: Failed to initialize dynamo cache.");
+                console.error("FATAL: Failed to initialize dynamo cache.", err);
                 return process.exit(1);
             }
 
