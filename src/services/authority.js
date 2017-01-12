@@ -9,7 +9,7 @@ module.exports = function AuthorityPlugin(opts) {
 
     var seneca = this;
     var common = this.common;
-    var logLevel = opts.logLevel
+    var logLevel = opts.logLevel;
 
     seneca.rpcAdd('role:accountService.Pub,cmd:getAuthorityFromToken.v1', getAuthorityFromToken_v1);
 
@@ -86,25 +86,36 @@ module.exports = function AuthorityPlugin(opts) {
 
     function testConsistency(console, state, done) {
 
+        var _nowTs = rpcUtils.helpers.fmtTimestamp();
+
         console.info("Checking claim consistency.");
 
         if(state.claim.iss !== state.sponsorRecord.code)
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent iss." });
+            return done({ name: "badRequest", message: "Claim rejected. Inconsistent iss." });
 
         else if(state.claim.sponsorKey !== state.sponsorRecord.key)
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent sponsorKey." });
+            return done({ name: "badRequest", message: "Claim rejected. Inconsistent sponsorKey." });
 
         else if(state.claim.clientKey !== state.clientRecord.key)
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
+            return done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
 
         else if(state.clientRecord.sponsorId !== state.sponsorRecord.id)
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
+            return done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
 
-        else if(state.claim.exp < rpcUtils.helpers.fmtTimestamp())
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent exp." });
+        else if(state.sponsorRecord.isDeleted)
+            return done({ name: "badRequest", message: "Claim rejected. Sponsor no longer exists." });
 
-        else if(state.claim.exp < state.claim.iat)
-            done({ name: "badRequest", message: "Claim rejected. Inconsistent iat." });
+        else if(state.clientRecord.isDeleted)
+            return done({ name: "badRequest", message: "Claim rejected. Client no longer exists." });
+
+        else if(!state.clientRecord.isActive)
+            return done({ name: "badRequest", message: "Claim rejected. Client not active." });
+
+        else if(state.claim.exp < _nowTs)
+            return done({ name: "badRequest", message: "Claim rejected. Token expired." });
+
+        else if(state.claim.iat > _nowTs)
+            return done({ name: "badRequest", message: "Claim rejected. Inconsistent iat." });
 
         console.debug(`Claim is consistent for client ${state.clientRecord.name} under sponsor ${state.sponsorRecord.code}`);
 

@@ -2,5 +2,6 @@
 
 module.exports = {
     CommonPlugin: require('./common'),
-    AuthorityPlugin: require('./authority')
+    AuthorityPlugin: require('./authority'),
+    CacheManagerPlugin: require('./cache-manager')
 };

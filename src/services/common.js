@@ -142,12 +142,15 @@ module.exports = function CommonPlugin(opts) {
         if(!state.has('claim.ver', String))
             return done({ name: "badRequest", message: "Claim missing required field: ver" });
 
+        else if(['1.0'].indexOf(state.claim.ver) < 0)
+            return done({ name: "badRequest", message: "Claim contains an unrecognized version: " + state.claim.ver });
+
         /* CLAIM VERSION 1.0 */
 
         console.debug("Claim version: " + state.claim.ver);
 
         if(state.claim.ver === '1.0' && !state.has('claim.iss', String))
-            return done({ name: "badRequest", message: "Claim missing required field: " });
+            return done({ name: "badRequest", message: "Claim missing required field: iss" });
 
         else if(state.claim.ver === '1.0' && !state.has('claim.sponsorKey', String))
             return done({ name: "badRequest", message: "Claim missing required field: sponsorKey" });
