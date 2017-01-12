@@ -64,8 +64,10 @@ module.exports = function RPC_AccountService(App) {
             logLevel: conf.shared.logLevel
         }
 
+        bus.use(rpcUtils.plugins.AuthorityPlugin, { logLevel: conf.shared.logLevel });
         bus.use(services.CommonPlugin, params);
         bus.use(services.AuthorityPlugin, params);
+        bus.use(services.CacheManagerPlugin, params);
 
         bus.rpcClient({ pin: "role:*" });
         bus.rpcServer({ pin: [
