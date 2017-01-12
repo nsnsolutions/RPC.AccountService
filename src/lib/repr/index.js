@@ -1,7 +1,7 @@
 'use strict';
 
-const MAP = {
-    'empty': (n, o) => { return {}; }
+module.exports = {
+    'empty': (o) => { return {}; },
+    'passthru': (o) => { return o; },
+    'claimV1': require('./claimV1')
 };
-
-module.exports = (n, o) => MAP[n](o);

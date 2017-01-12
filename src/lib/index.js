@@ -1,5 +1,6 @@
 'use strict';
 
 module.exports = {
-    Executor: require('./executor')
+    Jwt: require('./jwt'),
+    repr: require('./repr')
 };

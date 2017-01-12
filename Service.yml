@@ -10,7 +10,10 @@ configurations:
   - name: config
     watch: true
     key: /config/services/AccountService
+      # sponsorTableName
+      # clientTableName
 
   - name: shared
     watch: true
     key: /config/shared
+      # region

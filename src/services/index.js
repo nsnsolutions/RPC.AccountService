@@ -2,5 +2,5 @@
 
 module.exports = {
     CommonPlugin: require('./common'),
-    HelloPlugin: require('./hello')
+    AuthorityPlugin: require('./authority')
 };

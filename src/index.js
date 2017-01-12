@@ -1,41 +1,78 @@
 'use strict';
 
+const AWS = require('aws-sdk');
+const redis = require('redis');
+const async = require('async');
 const services = require('./services');
+const rpcUtils = require('rpc-utils');
 
 module.exports = function RPC_AccountService(App) {
 
     // Validate Shared Configs
+    App.configurations.config.assertMember("sponsorTableName");
+    App.configurations.config.assertMember("clientTableName");
 
     // Validate specific configs
+    App.configurations.shared.assertMember("region");
+    App.configurations.shared.assertMember("cacheEndpoint");
 
-    // Initialize App
-    var app = App({
-        onConfigUpdate: reload,
-        onStart: init,
-        onRestart: init,
-        onShutdown:() => process.exit(0)
+    var redisClient = redis.createClient({ url: App.configurations.shared.cacheEndpoint });
+    var dynamoClient = new AWS.DynamoDB({ region: App.configurations.shared.region });
+    var dynamoCacheClients = {};
+
+    // Cache connect / Service initialize
+    redisClient.on('connect', () => {
+        console.log("Connected to cache server.");
+        init();
     });
-
-    // Start the service
-    app.start();
 
     // ------------------------------------------------------------------------
 
-    function init(bus, conf) {
+    function init() {
 
         var params = {
+            dynamoClient: dynamoClient,
+            redisClient: redisClient,
+            tableMap: {
+                sponsor: App.configurations.config.sponsorTableName,
+                client: App.configurations.config.clientTableName
+            }
+        };
+
+        rpcUtils.CachedTable.create(params, (err, tables) => {
+            if(err) {
+                console.error("FATAL: Failed to initialize dynamo cache.");
+                return process.exit(1);
+            }
+
+            dynamoCacheClients = tables;
+
+            var app = App({
+                onConfigUpdate: reload,
+                onStart: initApp,
+                onRestart: initApp,
+                onShutdown: () => process.exit(0)
+            }).start();
+        });
+    }
+
+    function initApp(bus, conf) {
+
+        var params = {
+            dynamoCacheClients: dynamoCacheClients
         }
 
         bus.use(services.CommonPlugin, params);
-        bus.use(services.HelloPlugin, params);
+        bus.use(services.AuthorityPlugin, params);
 
         bus.rpcClient({ pin: "role:*" });
         bus.rpcServer({ pin: [
-          "role:accountService",
-          "role:accountService.Pub"
+            "role:accountService",
+            "role:accountService.Pub"
         ]});
     }
 
     function reload(name, conf) {
+        /* NOT IMPLEMENTED */
     }
 }
