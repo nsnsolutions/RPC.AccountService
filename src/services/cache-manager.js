@@ -8,30 +8,48 @@ const lib = require('../lib');
 module.exports = function CacheManagerPlugin(opts) {
 
     var seneca = this;
-    var common = this.common;
+    var shared = new lib.Shared(this, opts);
     var logLevel = opts.logLevel;
-    var sponsorTable = opts.dynamoCacheClients.sponsor;
-    var clientTable = opts.dynamoCacheClients.client;
 
-    seneca.rpcAdd('role:accountService.Pub,cmd:invalidateCache.v1', invalidateCache_v1);
+    seneca.rpcAdd('role:accountService.Pub,cmd:invalidateSponsorCache.v1', invalidateSponsorCache_v1);
+    seneca.rpcAdd('role:accountService.Pub,cmd:invalidateClientCache.v1', invalidateClientCache_v1);
 
     return { name: "CacheManagerPlugin" };
 
     // ------------------------------------------------------------------------
 
-    function invalidateCache_v1(args, rpcDone) {
+    function invalidateSponsorCache_v1(args, rpcDone) {
         var params = {
             logLevel: args.get("logLevel", logLevel),
             repr: lib.repr.empty,
-            name: "Invalidate Cache (v1)",
-            code: "IVC01",
+            name: "Invalidate Sponsor Cache (v1)",
+            code: "ISC01",
             done: rpcDone,
         };
 
         params.tasks = [
             validate,
             CheckAuthority,
-            findRecord,
+            shared.fetchSponsor,
+            flushRecord
+        ];
+
+        rpcUtils.Executor(params).run(args);
+    }
+
+    function invalidateClientCache_v1(args, rpcDone) {
+        var params = {
+            logLevel: args.get("logLevel", logLevel),
+            repr: lib.repr.empty,
+            name: "Invalidate Client Cache (v1)",
+            code: "ICC01",
+            done: rpcDone,
+        };
+
+        params.tasks = [
+            validate,
+            CheckAuthority,
+            shared.fetchClient,
             flushRecord
         ];
 
@@ -42,29 +60,11 @@ module.exports = function CacheManagerPlugin(opts) {
 
         console.info("Started validating client request");
 
-        var _context = state.get('context', '').toLowerCase();
-
         if(!state.has('key', String))
             return done({ name: "badRequest", message: "Missing required field: key" });
 
         else if(!state.has('token', String))
             return done({ name: "badRequest", message: "Missing required field: token" });
-
-        else if(!state.has('context', String))
-            return done({ name: "badRequest", message: "Missing required field: context" });
-
-
-        if(_context === "sponsor")
-            state.set('table', sponsorTable);
-
-        else if(_context === "client")
-            state.set('table', clientTable);
-
-        else
-            return done({ name: "badRequest", message: "Invalid value for context. Must be one of: sponsor, client" });
-
-
-        state.set('context', _context);
 
         done(null, state);
     }
@@ -86,44 +86,6 @@ module.exports = function CacheManagerPlugin(opts) {
             console.debug("User has access: " + result.toString());
             done(null, state);
         });
-
-
-        //seneca.act("role:accountService.Pub,cmd:getAuthorityFromToken.v1", (err, result) => {
-            //console.info(err, result);
-            //done(null, state);
-        //});
-    }
-
-    function findRecord(console, state, done) {
-
-        console.info("Started fetching record.");
-
-        var params = {
-            key: { key: state.key },
-            index: "key-index",
-            logLevel: console.level
-        };
-
-        console.debug("Searching for " + state.context + " key: " + state.key);
-
-        state.table.fetch(params, (err, record) => {
-
-            if(err)
-                return done({
-                    name: "internalError",
-                    message: "Failed to fetch record.",
-                    innerError: err
-                })
-
-            if(record) {
-                console.debug(`Record found: ${record.id}`);
-                state.set('record', record);
-            } else {
-                console.warn("Record not found.");
-            }
-
-            done(null, state);
-        });
     }
 
     function flushRecord(console, state, done) {
@@ -138,7 +100,7 @@ module.exports = function CacheManagerPlugin(opts) {
             logLevel: console.level
         }
 
-        state.table.flush(params, (err) => {
+        state.record.$flush(params, (err) => {
             if(err)
                 return done({
                     name: "internalError",
@@ -148,6 +110,5 @@ module.exports = function CacheManagerPlugin(opts) {
 
             done(null, state);
         });
-
     }
 }

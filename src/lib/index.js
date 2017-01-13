@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
-    Jwt: require('./jwt'),
+    Jwt: require('./Jwt'),
+    Shared: require('./shared'),
     repr: require('./repr')
 };

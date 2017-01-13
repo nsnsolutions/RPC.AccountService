@@ -8,7 +8,7 @@ const lib = require('../lib');
 module.exports = function AuthorityPlugin(opts) {
 
     var seneca = this;
-    var common = this.common;
+    var shared = new lib.Shared(this, opts);
     var logLevel = opts.logLevel;
 
     seneca.rpcAdd('role:accountService.Pub,cmd:getAuthorityFromToken.v1', getAuthorityFromToken_v1);
@@ -29,11 +29,11 @@ module.exports = function AuthorityPlugin(opts) {
 
         params.tasks = [
             validate,
-            common.parseToken,
-            common.validateClaim,
+            shared.parseToken,
+            shared.validateClaim,
             fetchSponsor,
             fetchClient,
-            common.verifyToken,
+            shared.verifyToken,
             testConsistency
         ];
 
@@ -67,7 +67,7 @@ module.exports = function AuthorityPlugin(opts) {
             sponsorKey: state.claim.sponsorKey
         });
 
-        common.fetchSponsor(console, params, (err, result) => {
+        shared.fetchSponsor(console, params, (err, result) => {
             state.set('sponsorRecord', result && result.record);
             done(err, state);
         });
@@ -78,7 +78,7 @@ module.exports = function AuthorityPlugin(opts) {
             clientKey: state.claim.clientKey
         });
 
-        common.fetchClient(console, params, (err, result) => {
+        shared.fetchClient(console, params, (err, result) => {
             state.set('clientRecord', result && result.record);
             done(err, state);
         });
