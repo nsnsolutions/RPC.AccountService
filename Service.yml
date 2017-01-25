@@ -7,7 +7,7 @@ description: A service for authority, authorization and account details.
 main: src/index.js
 
 configurations:
-  - name: config
+  - name: service
     watch: true
     key: /config/services/AccountService
       # sponsorTableName

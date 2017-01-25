@@ -46,14 +46,25 @@ module.exports = function AuthorityPlugin(opts) {
 
         var type = (state.get('type') || "").toLowerCase();
 
-        if(!state.has('type', String))
-            return done({ name: "badRequest", message: "Missing required field: type" });
+        if(!state.has('type'))
+            return done({ name: "badRequest",
+                message: "Missing required field: type" });
+
+        else if(!state.has('type', String))
+            return done({ name: "badRequest",
+                message: "Wrong type for field: type. Expected: String" });
 
         else if(['jwt'].indexOf(type) < 0)
-            return done({ name: "badRequest", message: "Unsupported token format." });
+            return done({ name: "badRequest",
+                message: "Unsupported token format." });
+
+        else if(!state.has('token'))
+            return done({ name: "badRequest",
+                message: "Missing required field: token" });
 
         else if(!state.has('token', String))
-            return done({ name: "badRequest", message: "Missing required field: token" });
+            return done({ name: "badRequest",
+                message: "Wrong type for field: token. Excepted: String" });
 
         // Normalize type
         state.set('type', type);
@@ -91,31 +102,40 @@ module.exports = function AuthorityPlugin(opts) {
         console.info("Checking claim consistency.");
 
         if(state.claim.iss !== state.sponsorRecord.code)
-            return done({ name: "badRequest", message: "Claim rejected. Inconsistent iss." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Inconsistent iss." });
 
         else if(state.claim.sponsorKey !== state.sponsorRecord.key)
-            return done({ name: "badRequest", message: "Claim rejected. Inconsistent sponsorKey." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Inconsistent sponsorKey." });
 
         else if(state.claim.clientKey !== state.clientRecord.key)
-            return done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Inconsistent clientKey." });
 
         else if(state.clientRecord.sponsorId !== state.sponsorRecord.id)
-            return done({ name: "badRequest", message: "Claim rejected. Inconsistent clientKey." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Inconsistent clientKey." });
 
         else if(state.sponsorRecord.isDeleted)
-            return done({ name: "badRequest", message: "Claim rejected. Sponsor no longer exists." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Sponsor no longer exists." });
 
         else if(state.clientRecord.isDeleted)
-            return done({ name: "badRequest", message: "Claim rejected. Client no longer exists." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Client no longer exists." });
 
         else if(!state.clientRecord.isActive)
-            return done({ name: "badRequest", message: "Claim rejected. Client not active." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Client not active." });
 
         else if(state.claim.exp < _nowTs)
-            return done({ name: "badRequest", message: "Claim rejected. Token expired." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Token expired." });
 
         else if(state.claim.iat > _nowTs)
-            return done({ name: "badRequest", message: "Claim rejected. Inconsistent iat." });
+            return done({ name: "badRequest",
+                message: "Claim rejected. Inconsistent iat." });
 
         console.debug(`Claim is consistent for client ${state.clientRecord.name} under sponsor ${state.sponsorRecord.code}`);
 

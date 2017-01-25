@@ -47,8 +47,8 @@ module.exports = function CacheManagerPlugin(opts) {
         };
 
         params.tasks = [
+            shared.getAuthorityFromToken,
             validate,
-            CheckAuthority,
             shared.fetchClient,
             flushRecord
         ];
@@ -60,32 +60,25 @@ module.exports = function CacheManagerPlugin(opts) {
 
         console.info("Started validating client request");
 
-        if(!state.has('key', String))
-            return done({ name: "badRequest", message: "Missing required field: key" });
+        if(!state.has('person', Object))
+            return done({
+                name: "internalError",
+                message: "Failed to load authority." });
 
-        else if(!state.has('token', String))
-            return done({ name: "badRequest", message: "Missing required field: token" });
+        else if(!state.person.inRole("Developer"))
+            return done({
+                name: "forbidden",
+                message: "Unable to complete request: Insufficient privileges" });
+
+        else if(!state.has('key'))
+            return done({ name: "badRequest",
+                message: "Missing required field: key" });
+
+        else if(!state.has('key', String))
+            return done({ name: "badRequest",
+                message: "Wrong type for field: key. Expected: String." });
 
         done(null, state);
-    }
-
-    function CheckAuthority(console, state, done) {
-
-        console.info("Starting check authority");
-
-        seneca.getAuthority(state, (err, result) => {
-            if(err) 
-                return done(err);
-
-            else if(!result.inRole("Developer"))
-                return done({
-                    name: "notAuthorized",
-                    message: "You do not have sufficient access to execute this action."
-                });
-
-            console.debug("User has access: " + result.toString());
-            done(null, state);
-        });
     }
 
     function flushRecord(console, state, done) {
