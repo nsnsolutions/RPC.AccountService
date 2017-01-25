@@ -6,12 +6,10 @@
     "async": "^2.1.2",
     "aws-sdk": "^2.6.4",
     "lodash": "^4.17.4",
-    "moment": "^2.17.1",
     "redis": "^2.6.3",
     "require-dir": "^0.3.1",
     "rpc-utils": "git://github.com/nsnsolutions/RPC.Utils.git#v0.1.3-alpha",
-    "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.1",
-    "uuid": "^3.0.1"
+    "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.1"
   },
   "devDependencies": {
     "nunjucks": "^2.5.2",
