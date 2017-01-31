@@ -34,7 +34,7 @@ module.exports = function ValidateClaimConstructor(trans, opts) {
         // email and photoUrl should be a URL.
 
         // TODO: Fix photo url issue.
-        state.ensureExists('photoUrl', 'MISSING PHOTO');
+        state.ensureExists('claim.photoUrl', 'MISSING PHOTO');
         
         console.info("Started validating structure of claim");
 
