@@ -48,12 +48,8 @@ module.exports = function VerifyTokenConstructor(trans, opts) {
 
         if(!isValid)
             return done({
-                name: "badRequest",
-                message: "Bad Token.",
-                innerError: {
-                    name: "forbidden",
-                    message: "Invalid token signature."
-                }
+                name: "forbidden",
+                message: "Invalid token signature."
             });
 
         console.debug("Claim is valid for sponsor " + state.sponsorRecord.code);
