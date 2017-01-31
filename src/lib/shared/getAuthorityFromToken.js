@@ -6,7 +6,7 @@ const rpcUtils = require('rpc-utils');
 module.exports = function getAuthorityFromToken(seneca, opts) {
 
     var shared = this,
-        logLevel = opts.logLevel
+        logLevel = opts.logLevel;
 
     return handler;
 
