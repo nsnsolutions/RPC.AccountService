@@ -1,4 +1,4 @@
-# RCP RPC.AccountService
+# RPC.AccountService
 
 A service for authority, authorization and account details.
 
@@ -14,21 +14,196 @@ npm start -- --debug
 For automatic code reloading in development:
 
 ```bash
-    npm install -g nodemon
-    nodemon -- --debug
+npm install -g nodemon
+nodemon -- --debug
 ```
 
-To run __AMPQ__, omit the `--debug` option from either command.
+To run on __AMQP__, omit the ```--debug``` option from either command.
 
-_NOTE: you will need a running RabbitMQ and ETCD2 Environment._
+<sup>_Note: You will need a running [RabbitMQ and ETCD2](https://github.com/nsnsolutions/rpcfw.env) environment._</sup>
 
----
+# Interface
 
-# API
+This section outlines the details you will need to use this service.
 
-## Error Model:
+- [Methods](#methods)
+- [Representations](#representations)
 
-Standard RPCFW error models
+## Methods
+
+- [Get Authority From Token (v1)](#get-authority-from-token-v1) - Validate an authority token and return a json representation of that authority.
+- [Invalidate Sponsor Cache (v1)](#invalidate-sponsor-cache-v1) - Delete the given sponsor from the cache.
+- [Invalidate Client Cache (v1)](#invalidate-client-cache-v1) - Delete the given client from the cache.
+
+
+### Get Authority From Token (v1)
+
+Validate an authority token and return a json representation of that authority.
+
+#### RPC Execution
+
+- Role: accountService.Pub
+- Cmd: getAuthorityFromToken.v1
+
+```javascript
+var args = { ... }
+seneca.act('role:accountService.Pub,cmd:getAuthorityFromToken.v1', args, (err, dat) => {
+    /* Handle result */
+});
+```
+
+#### HTTP Execution
+
+- Service Name: accountService
+- Method Name: getAuthorityFromToken
+- Version: v1
+
+```
+POST /amqp/exec/accountService/getAuthorityFromToken?version=v1 HTTP/1.1
+Host: devel.rpc.velma.com
+Content-Type: application/json
+x-repr-format: RPC
+Cache-Control: no-cache
+
+{ ... }
+```
+
+#### Arguments
+
+This method accepts the following arguments.
+
+| Param     | Type   | Default | Description |
+| --------- | ------ | ------- | ----------- |
+| type | String | N/A | The type of token. Currently only `JWT` is supported. |
+| token | String | N/A | The token data. |
+
+#### Returns
+
+This method returns the following information.
+
+- [Error Response (v1)](#error-response-v1)
+- [Claim (v1)](#claim-v1)
+
+### Invalidate Sponsor Cache (v1)
+
+Delete the given sponsor from the cache.
+
+#### RPC Execution
+
+- Role: accountService.Pub
+- Cmd: invalidateSponsorCache.v1
+
+```javascript
+var args = { ... }
+seneca.act('role:accountService.Pub,cmd:invalidateSponsorCache.v1', args, (err, dat) => {
+    /* Handle result */
+});
+```
+
+#### HTTP Execution
+
+- Service Name: accountService
+- Method Name: invalidateSponsorCache
+- Version: v1
+
+```
+POST /amqp/exec/accountService/invalidateSponsorCache?version=v1 HTTP/1.1
+Host: devel.rpc.velma.com
+Content-Type: application/json
+x-repr-format: RPC
+Cache-Control: no-cache
+
+{ ... }
+```
+
+#### Arguments
+
+This method accepts the following arguments.
+
+| Param     | Type   | Default | Description |
+| --------- | ------ | ------- | ----------- |
+| key | String | N/A | The index-key of the sponsor's record to invalidate. |
+| token | String | N/A | Authority for this request. |
+
+#### Returns
+
+This method returns the following information.
+
+- [Error Response (v1)](#error-response-v1)
+- [Empty (all)](#empty-all)
+
+### Invalidate Client Cache (v1)
+
+Delete the given client from the cache.
+
+#### RPC Execution
+
+- Role: accountService.Pub
+- Cmd: invalidateClientCache.v1
+
+```javascript
+var args = { ... }
+seneca.act('role:accountService.Pub,cmd:invalidateClientCache.v1', args, (err, dat) => {
+    /* Handle result */
+});
+```
+
+#### HTTP Execution
+
+- Service Name: accountService
+- Method Name: invalidateClientCache
+- Version: v1
+
+```
+POST /amqp/exec/accountService/invalidateClientCache?version=v1 HTTP/1.1
+Host: devel.rpc.velma.com
+Content-Type: application/json
+x-repr-format: RPC
+Cache-Control: no-cache
+
+{ ... }
+```
+
+#### Arguments
+
+This method accepts the following arguments.
+
+| Param     | Type   | Default | Description |
+| --------- | ------ | ------- | ----------- |
+| key | String | N/A | The index-key of the sponsor's record to invalidate. |
+| token | String | N/A | Authority for this request. |
+
+#### Returns
+
+This method returns the following information.
+
+- [Error Response (v1)](#error-response-v1)
+- [Empty (all)](#empty-all)
+
+
+## Representations
+
+All response sent by this service will differ depending on the protocal used
+and the control headers set on the request. You can read more about how this
+output is create in the [RPC Interface Response Model](https://github.com/nsnsolutions/RPC.Interface#response-object)
+documentation.
+
+Excluding [Error Response (v1)](#error-response-v1), this documentation will
+only show the result body details.
+
+- [Error Response (v1)](#error-response-v1)
+- [Claim (v1)] (#claim-v1)
+- [Empty (all)] (#empty-all)
+
+### Error Response (v1)
+
+Represents an execution failure. Details about the failure are placed in
+`message` and a numeric value is placed in `code` that is specific to the type
+of error.
+
+This response uses the standard
+[rpcfw](https://github.com/nsnsolutions/rpcfw/blob/devel/README.md#errors)
+error model and codes.
 
 ```json
 {
@@ -38,84 +213,55 @@ Standard RPCFW error models
 }
 ```
 
-__Application Codes__
+For more information on workflow error codes:
+[RPC-Utils.Executor](https://github.com/nsnsolutions/RPC.Utils/blob/devel/README.md#executor)
 
-No application specific error codes exist.
+<sup>_Note: This detail level is not always returnes. Please see the [RPC Interface Response Model](https://github.com/nsnsolutions/RPC.Interface#response-object) documentation for more information._</sup>
 
-## Methods
 
-The following is a list of all the available methods provided by this service.
-More detail can be found for each method in dedicated sections below.
+### Claim (v1)
 
-| role               | cmd                       | Plugin             | Description                                                                    |
-| ------------------ | ------------------------- | ------------------ | ------------------------------------------------------------------------------ |
-| accountService.Pub | getAuthorityFromToken.v1  | AuthorityPlugin    | Validate a authority token and return a json representation of that authority. |
-| accountService.Pub | invalidateSponsorCache.v1 | CacheManagerPlugin | Delete the given sponsor from the __CACHE__.                                   |
-| accountService.Pub | invalidateClientCache.v1  | CacheManagerPlugin | Delete the given client from the __CACHE__.                                    |
+Represents principle authority as declared by the issuing party and
+validated by this service.
 
-### Get Authority From Token (V1)
 
-Validate an authoirty token and return a json representation of that authority.
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+| ver | String | Version of claim |
+| iss | String | Issuer code |
+| apiKey | String | Api key |
+| sponsorKey | String | Sponsor key |
+| clientKey | String | Client key |
+| userId | String | User's id as defined by the issuer |
+| userName | String | Username as defined by the issuer |
+| fullName | String | User's full name as defined by the issuer. |
+| email | String | User's email address as defined by the issuer. |
+| photoUrl | String | URL to a headshot of the user. |
+| iat | Number | Date at which this token was issuesed. |
+| exp | Number | Date at which this token will expire. |
+| roles | Array | A list of roles assigned by the sponsor to this user. |
+| sponsorId | String | The unique id of the sponsor record. |
+| sponsorName | String | The friendly name of the sponsor record. |
+| clientId | String | The unique id of the client record. |
+| clientName | String | The friendly name of the client record. |
+| clientPhoneNumber | String | The client's phone number. |
+| clientAddress.singleLine | String | The client's physical address in single line format. |
+| clientAddress.line1 | String | First line of the client's physical address. |
+| clientAddress.line2 | String | Second line of the client's physical address. |
+| clientAddress.city | String | City part of the client's physical address. |
+| clientAddress.state | String | City part of the client's physical address. |
+| clientAddress.zip | String | Zip part of the client's physical address. |
 
-- role: accountService.Pub
-- cmd: getAuthorityFromToken.v1
-- Plugin: AuthorityPlugin
-- Logging: AFT01
 
-__API Interface URI__
+### Empty (all)
 
-`/{PREFIX}/exec/accountService/getAuthorityFromToken?version=1`
+Represents a empty data return.
 
-__Arguments__
 
-| Param    | Type      | Default                | Description                                                          |
-| -------- | --------- | ---------------------- | -------------------------------------------------------------------- |
-| logLevel | String    | `Environment Default`  | Override logLevel to increase/decrease logging output for this call. |
-| type     | String    | N/A                    | The type of token. Currently only `JWT` is support.                  |
-| token    | String    | N/A                    | The actual token to validate.                                        |
+_Empty Representations_
 
-### Invalidate Sponsor Cache (V1)
 
-Delete the given sponsor from the cache.  This does not alter the record in any
-way. It only invalidates the cache object. The record will be reloaded into
-cache on request.
 
-- role: accountService.Pub
-- cmd: invalidateSponsorCache.v1
-- Plugin: CacheManagerPlugin
-- Logging: ISC01
+---
 
-__API Interface URI__
-
-`/{PREFIX}/exec/accountService/invalidateSponsorCache?version=1`
-
-__Arguments__
-
-| Param    | Type      | Default                | Description                                                          |
-| -------- | --------- | ---------------------- | -------------------------------------------------------------------- |
-| logLevel | String    | `Environment Default`  | Override logLevel to increase/decrease logging output for this call. |
-| token    | String    | N/A                    | A token used to check the authority of the request.                  |
-| key      | String    | N/A                    | The index-key Key of the sponsor to invalidate the record for.       |
-
-### Invalidate Client Cache (V1)
-
-Delete the given client from the cache.  This does not alter the record in any
-way. It only invalidates the cache object. The record will be reloaded into
-cache on request.
-
-- role: accountService.Pub
-- cmd: invalidateClientCache.v1
-- Plugin: CacheManagerPlugin
-- Logging: ICC01
-
-__API Interface URI__
-
-`/{PREFIX}/exec/accountService/invalidateClientCache?version=1`
-
-__Arguments__
-
-| Param    | Type      | Default                | Description                                                          |
-| -------- | --------- | ---------------------- | -------------------------------------------------------------------- |
-| logLevel | String    | `Environment Default`  | Override logLevel to increase/decrease logging output for this call. |
-| token    | String    | N/A                    | A token used to check the authority of the request.                  |
-| key      | String    | N/A                    | The index-key Key of the client to invalidate the record for.        |
+<sup>_This documentation was generated by Ian's handy template engine. If you find errors, please let hime know._</sup>
