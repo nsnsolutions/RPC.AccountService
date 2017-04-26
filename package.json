@@ -3,6 +3,7 @@
     "start": "node_modules/.bin/rpcfw run Service.yml"
   },
   "dependencies": {
+    "amqpuri": "1.0.3",
     "async": "^2.1.2",
     "aws-sdk": "^2.6.4",
     "lodash": "^4.17.4",
