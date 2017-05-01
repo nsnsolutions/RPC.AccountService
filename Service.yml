@@ -1,7 +1,7 @@
 # Service Configuration File.
 ---
 name: RPC.AccountService
-version: 1.0.0
+version: 1.0.1
 description: A service for authority, authorization and account details.
 
 main: src/index.js
