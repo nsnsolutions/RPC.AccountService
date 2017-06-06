@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node_modules/.bin/rpcfw run Service.yml"
+    "start": "env node --max_old_space_size=200 node_modules/.bin/rpcfw run Service.yml",
+    "test": "node_modules/.bin/mocha"
   },
   "dependencies": {
     "async": "2.3.0",
@@ -12,5 +13,6 @@
     "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.2.2"
   },
   "devDependencies": {
+    "mocha": "3.3.0"
   }
 }
