@@ -1,11 +1,10 @@
-'use strict';
+'use strict'
 
-module.exports = function FetchSponsorConstructor(trans, opts) {
+module.exports = function Constructor(opts) {
 
-    var common = this,
-        seneca = trans,
-        sponsorTable = opts.dynamoCacheClients.sponsor,
-        clientTable = opts.dynamoCacheClients.client;
+    var seneca = this,
+        ddbClient = opts.ddbClient,
+        tables = opts.tables;
 
     return handler;
 
@@ -13,44 +12,33 @@ module.exports = function FetchSponsorConstructor(trans, opts) {
 
     function handler(console, state, done) {
 
-        /*
-         * Retrieve the sponsor record from dynamo (with cache)
-         *
-         * If successfull, record will be added to state.
-         *
-         * Arguments:
-         *
-         *   key:
-         *     The sponsor key to lookup the record.
-         *     You can optionally speficy sponsorKey.
-         *
-         * Result:
-         *
-         *   record:
-         *     The dynamo record that represents the sponsor.
-         */
+        var sponsorKey = state.sponsorKey || state.get('claim.sponsorKey');
 
-        console.info("Started fetching sponsor record.");
+        if(!sponsorKey)
+            return done({
+                name: 'badRequest',
+                message: "Bad Token.",
+            });
 
         var params = {
-            key: { key: state.sponsorKey || state.key },
-            index: "key-index",
-            logLevel: console.level
+            TableName: tables.sponsor,
+            IndexName: 'key-index',
+            Key: { key: sponsorKey }
         };
 
-        console.debug("Searching for sponsor key: " + params.key.key);
+        console.info(`Looking up sponsor by key: ${sponsorKey}`);
 
-        sponsorTable.fetch(params, (err, record) => {
+        ddbClient.getSI(params, (err, result) => {
             if(err)
                 return done({
-                    name: "internalError",
-                    message: "Failed to fetch sponsor record.",
+                    name: 'internalError',
+                    message: 'Failed to fetch sponsor record.',
                     innerError: err
-                })
+                });
 
-            else if(!record)
+            else if(!result.Items || result.Items.length === 0 || result.Items[0].isDeleted)
                 return done({
-                    name: "badRequest",
+                    name: 'badRequest',
                     message: "Bad Token.",
                     innerError: {
                         name: "notFound",
@@ -58,9 +46,8 @@ module.exports = function FetchSponsorConstructor(trans, opts) {
                     }
                 });
 
-            console.debug(`Sponsor found: ${record.code} (${record.id})`);
+            state.set('sponsorRecord', result.Items[0]);
 
-            state.set('record', record);
             done(null, state);
         });
     }

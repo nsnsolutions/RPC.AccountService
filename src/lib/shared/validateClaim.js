@@ -2,12 +2,7 @@
 
 const Jwt = require('../Jwt');
 
-module.exports = function ValidateClaimConstructor(trans, opts) {
-
-    var common = this,
-        seneca = trans,
-        sponsorTable = opts.dynamoCacheClients.sponsor,
-        clientTable = opts.dynamoCacheClients.client;
+module.exports = function ValidateClaimConstructor(opts) {
 
     return handler;
 
@@ -15,28 +10,13 @@ module.exports = function ValidateClaimConstructor(trans, opts) {
 
     function handler(console, state, done) {
 
-        /*
-         * Verify that the given claim has all the required fields.
-         * This method does consider claim version.
-         *
-         * If this method completes, the claim can be considered verified.
-         *
-         * Arguments:
-         *
-         *   claim:
-         *     The claim to verify
-         *
-         * Result:
-         *   None
-         */
-
         // TODO: Verify each field has valid values: Ie: email should be an
         // email and photoUrl should be a URL.
 
         // TODO: Fix photo url issue.
         state.ensureExists('claim.photoUrl', 'MISSING PHOTO');
         
-        console.info("Started validating structure of claim");
+        console.info("Validating claim structure.");
 
         if(!state.has('claim.ver'))
             return done({ name: "badRequest",
@@ -142,7 +122,7 @@ module.exports = function ValidateClaimConstructor(trans, opts) {
             return done({ name: "badRequest",
                 message: "Wrong type for field: roles. Expected: String Array" });
 
-        console.debug("Claim is valid for version " + state.claim.ver);
+        console.info("Claim is valid for version " + state.claim.ver);
 
         // TODO: Bug: empy string in photoUrl. HotFIx.
         if(state.get('claim.photoUrl') === "")

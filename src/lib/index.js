@@ -2,6 +2,6 @@
 
 module.exports = {
     Jwt: require('./Jwt'),
-    Shared: require('./shared'),
+    shared: require('./shared'),
     repr: require('./repr')
 };

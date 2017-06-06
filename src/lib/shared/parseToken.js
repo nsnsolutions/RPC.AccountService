@@ -2,12 +2,7 @@
 
 const Jwt = require('../Jwt');
 
-module.exports = function ParseTokenConstructor(trans, opts) {
-
-    var common = this,
-        seneca = trans,
-        sponsorTable = opts.dynamoCacheClients.sponsor,
-        clientTable = opts.dynamoCacheClients.client;
+module.exports = function ParseTokenConstructor(opts) {
 
     return handler;
 
@@ -15,28 +10,7 @@ module.exports = function ParseTokenConstructor(trans, opts) {
 
     function handler(console, state, done) {
 
-        /*
-         * Parses a token.
-         *
-         * If successfull the token has good structure.
-         * It does not mean that the token is trust worthy
-         *
-         * Arguments:
-         *
-         *   type:
-         *     The type of token to parse.
-         *     One of: [ 'jwt' ]
-         *
-         *   token:
-         *     The token data to be parsed.
-         *
-         * result:
-         *
-         *   claim:
-         *     The resulting claim information after parsing the token.
-         */
-
-        console.info("Started parsing token");
+        console.info("Parsing token");
 
         var isValid = false,
             claim = null;

@@ -1,11 +1,10 @@
-'use strict';
+'use strict'
 
-module.exports = function FetchClientConstructor(trans, opts) {
+module.exports = function Constructor(opts) {
 
-    var common = this,
-        seneca = trans,
-        sponsorTable = opts.dynamoCacheClients.sponsor,
-        clientTable = opts.dynamoCacheClients.client;
+    var seneca = this,
+        ddbClient = opts.ddbClient,
+        tables = opts.tables;
 
     return handler;
 
@@ -13,44 +12,33 @@ module.exports = function FetchClientConstructor(trans, opts) {
 
     function handler(console, state, done) {
 
-        /*
-         * Retrieve the client record from dynamo (with cache)
-         *
-         * If successfull, record will be added to state.
-         *
-         * Arguments:
-         *
-         *   key:
-         *     The client key to lookup the record.
-         *     You can optionally speficy clientKey.
-         *
-         * Result:
-         *
-         *   record:
-         *     The dynamo record that represents the client.
-         */
+        var clientKey = state.clientKey || state.get('claim.clientKey');
 
-        console.info("Started fetching client record.");
+        if(!clientKey)
+            return done({
+                name: 'badRequest',
+                message: "Bad Token.",
+            });
 
         var params = {
-            key: { key: state.clientKey || state.key },
-            index: "key-index",
-            logLevel: console.level
+            TableName: tables.client,
+            IndexName: 'key-index',
+            Key: { key: clientKey }
         };
 
-        console.debug("Searching for client key: " + params.key.key);
+        console.info(`Looking up client by key: ${clientKey}`);
 
-        clientTable.fetch(params, (err, record) => {
+        ddbClient.getSI(params, (err, result) => {
             if(err)
                 return done({
-                    name: "internalError",
-                    message: "Failed to fetch client record.",
+                    name: 'internalError',
+                    message: 'Failed to fetch client record.',
                     innerError: err
-                })
+                });
 
-            else if(!record)
+            else if(!result.Items || result.Items.length === 0 || result.Items[0].isDeleted)
                 return done({
-                    name: "badRequest",
+                    name: 'badRequest',
                     message: "Bad Token.",
                     innerError: {
                         name: "notFound",
@@ -58,9 +46,18 @@ module.exports = function FetchClientConstructor(trans, opts) {
                     }
                 });
 
-            console.debug(`Client found: ${record.name} (${record.id})`);
+            else if(!result.Items[0].isActive)
+                return done({
+                    name: 'badRequest',
+                    message: "Bad Token.",
+                    innerError: {
+                        name: "badRequest",
+                        message: "Client not active."
+                    }
+                });
 
-            state.set('record', record);
+            state.set('clientRecord', result.Items[0]);
+
             done(null, state);
         });
     }

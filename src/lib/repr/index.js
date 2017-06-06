@@ -1,7 +1,23 @@
 'use strict';
 
-module.exports = {
-    'empty': (o) => { return null; },
-    'passthru': (o) => { return o; },
-    'claimV1': require('./claimV1')
-};
+const reprs = require('require-dir')('.');
+
+module.exports = (function () {
+
+    var self = {};
+
+    init();
+
+    return self;
+
+    // ------------------------------------------------------------------------
+
+    function init() {
+        for(var name in reprs) {
+            if(name.startsWith('_'))
+                continue;
+
+            self[name] = reprs[name];
+        }
+    }
+})();
