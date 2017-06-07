@@ -8,7 +8,7 @@ const assert = require('assert'),
 describe('AuthorityPlugin', function() {
     describe('getAuthorityFromToken (v1)', function() {
 
-        before(function() {
+        beforeEach(function() {
 
             this.logLevel = 'none';
 
