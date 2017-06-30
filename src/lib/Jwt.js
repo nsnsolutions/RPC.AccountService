@@ -97,7 +97,14 @@ function jwtDecodePart(str) {
 }
 
 function b64Decode(str) {
-    return new Buffer(str, 'base64').toString();
+
+    var padding = 4 - (str.length % 4);
+
+    if(padding < 4)
+        for(var i = 0; i < padding; i++)
+            str+='=';
+
+    return new Buffer(str.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString();
 }
 
 function b64Encode(str) {
