@@ -12,10 +12,47 @@ module.exports = function AuthorityPlugin(opts) {
         logLevel = opts.logLevel;
 
     seneca.rpcAdd('role:accountService.Pub,cmd:getAuthorityFromToken.v1', getAuthorityFromToken_v1);
+    seneca.rpcAdd('role:accountService.Pub,cmd:renewToken.v1', renewToken_v1);
 
     return { name: "AuthorityPlugin" };
 
     // ------------------------------------------------------------------------
+
+    function renewToken_v1(args, rpcDone) {
+
+        if(args.has('type', String))
+            args.set('type', args.type.toLowerCase());
+
+        var params = {
+            name: "Renew Token (v1)",
+            code: "RT01",
+            repr: lib.repr.token_v1,
+
+            transport: seneca,
+            legLevel: args.get("logLevel", logLevel),
+            done: rpcDone,
+
+            required: [
+                { field: "type", type: String, regex: '^(jwt)$' },
+                { field: "token", type: String }
+            ],
+
+            tasks: [
+                shared.parseToken,
+                setLoggingContext,
+                shared.validateClaim,
+                shared.fetchSponsor,
+                shared.fetchClient,
+                shared.verifyToken,
+                testConsistency,
+                extendAndSign
+            ]
+        };
+
+        rpcUtils.Workflow
+            .Executor(params)
+            .run(args);
+    }
 
     function getAuthorityFromToken_v1(args, rpcDone) {
 
@@ -103,6 +140,18 @@ module.exports = function AuthorityPlugin(opts) {
                 message: "Claim rejected. Inconsistent iat." });
 
         console.info(`Claim is consistent for client ${state.clientRecord.name} under sponsor ${state.sponsorRecord.code}`);
+
+        done(null, state);
+    }
+
+    function extendAndSign(console, state, done) {
+
+        let newToken;
+        console.info("Renewing JWT Token...");
+
+        state.claim.exp = rpcUtils.helpers.fmtTimestamp();
+        newToken = lib.Jwt.HS256.createToken(state.claim, state.sponsorRecord.secretKey);
+        state.set('token', newToken);
 
         done(null, state);
     }
