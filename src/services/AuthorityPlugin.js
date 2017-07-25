@@ -149,7 +149,12 @@ module.exports = function AuthorityPlugin(opts) {
         let newToken;
         console.info("Renewing JWT Token...");
 
-        state.claim.exp = rpcUtils.helpers.fmtTimestamp();
+        // Extend JWT Token by 70 hrs.
+        // This is to accomidate a weekend. 24 hrs on sat and sun
+        // + 7 hrs (5pm to midnight) on friday.
+        // + 9 hrs (12am to 9am) on monday
+
+        state.claim.exp = rpcUtils.helpers.fmtTimestamp() + 252000; // 70hrs
         newToken = lib.Jwt.HS256.createToken(state.claim, state.sponsorRecord.secretKey);
         state.set('token', newToken);
 
