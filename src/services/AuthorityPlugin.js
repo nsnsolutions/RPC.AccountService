@@ -153,6 +153,7 @@ module.exports = function AuthorityPlugin(opts) {
         // This is to accomidate a weekend. 24 hrs on sat and sun
         // + 7 hrs (5pm to midnight) on friday.
         // + 9 hrs (12am to 9am) on monday
+        // 24+24+7+9=64 -> round up to 70
 
         state.claim.exp = rpcUtils.helpers.fmtTimestamp() + 252000; // 70hrs
         newToken = lib.Jwt.HS256.createToken(state.claim, state.sponsorRecord.secretKey);
