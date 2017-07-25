@@ -10,7 +10,7 @@
     "redis": "2.7.1",
     "require-dir": "0.3.1",
     "rpc-utils": "git://github.com/nsnsolutions/RPC.Utils.git#v2.4.0",
-    "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.2.2"
+    "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.3.0"
   },
   "devDependencies": {
     "mocha": "3.3.0"
