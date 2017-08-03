@@ -45,7 +45,7 @@ module.exports = function RPC_AccountService(App) {
             cache: {
                 disableCache: isCacheDisabled(conf),
                 url: conf.shared.dynamoCache,
-                ttl: 86000
+                ttl: 1800
             }
         });
 
