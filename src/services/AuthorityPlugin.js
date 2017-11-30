@@ -131,11 +131,11 @@ module.exports = function AuthorityPlugin(opts) {
             return done({ name: "badRequest",
                 message: "Claim rejected. Client not active." });
 
-        else if(state.claim.exp < _nowTs)
+        else if(state.claim.exp < (_nowTs - 10))
             return done({ name: "badRequest",
                 message: "Claim rejected. Token expired." });
 
-        else if(state.claim.iat > _nowTs)
+        else if(state.claim.iat > (_nowTs + 10))
             return done({ name: "badRequest",
                 message: "Claim rejected. Inconsistent iat." });
 
