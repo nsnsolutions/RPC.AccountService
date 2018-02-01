@@ -1,18 +1,28 @@
 {
+  "name": "account-service",
+  "version": "3.0.0",
   "scripts": {
-    "start": "env node --max_old_space_size=200 node_modules/.bin/rpcfw run Service.yml",
-    "test": "node_modules/.bin/mocha"
+    "nodemon": "nodemon",
+    "lint": "eslint src/**.js src/**/*.js",
+    "start": "env node --max_old_space_size=${NODE_MAX_MEM} src/index.js",
+    "test": "mocha"
   },
   "dependencies": {
-    "async": "2.3.0",
-    "aws-sdk": "2.46.0",
-    "lodash": "4.17.4",
-    "redis": "2.7.1",
-    "require-dir": "0.3.1",
-    "rpc-utils": "git://github.com/nsnsolutions/RPC.Utils.git#v2.4.0",
-    "rpcfw": "git://github.com/nsnsolutions/rpcfw.git#v1.3.0"
+    "aws-sdk": "^2.188.0",
+    "lodash": "^4.17.4",
+    "pino": "^4.10.3",
+    "redis": "^2.8.0",
+    "seneca": "^3.4.3"
   },
   "devDependencies": {
-    "mocha": "3.3.0"
+    "chai": "^4.1.2",
+    "eslint": "^4.15.0",
+    "eslint-plugin-async-await": "0.0.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "mocha": "^4.1.0",
+    "mock-require": "^2.0.2",
+    "nodemon": "^1.14.10",
+    "redis-mock": "^0.20.0",
+    "sinon": "^4.2.1"
   }
 }

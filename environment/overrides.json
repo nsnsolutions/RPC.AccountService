@@ -1,0 +1,10 @@
+{
+
+    "NOTE": "Override stage specific variables for local development",
+
+    "local.common.logLevel": "INFO",
+    "local.common.redisUrl": "redis://localhost:6379",
+
+    "local.env.AWS_REGION": "us-west-2",
+    "local.env.SERVICE_LB": "dev-microservice.velma.com"
+}

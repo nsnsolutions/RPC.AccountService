@@ -1,3 +1,5 @@
+.DS_Store
+
 # Logs
 logs
 *.log
@@ -14,6 +16,7 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+reports
 
 # nyc test coverage
 .nyc_output
@@ -42,7 +45,4 @@ jspm_packages
 
 # Output of 'npm pack'
 *.tgz
-
-# Yarn Integrity file
-.yarn-integrity
-
+package-lock.json
