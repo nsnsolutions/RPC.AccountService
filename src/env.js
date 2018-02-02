@@ -1,8 +1,5 @@
 "use strict";
 
-const util = require("util");
-const AWS = require("aws-sdk");
-
 module.exports = function Environment() {};
 
 module.exports.preload = function EnvironmentPreload(opts) {
@@ -10,6 +7,7 @@ module.exports.preload = function EnvironmentPreload(opts) {
     const seneca = this;
     const stage = process.env.SERVICE_ENV || "local";
     const catalog = opts.options.overrides || {};
+    const inject = seneca.pin("role:dependent,inject:*");
 
     /*
      * Check the catalog for any environmental variable overrides and apply them.
@@ -21,12 +19,6 @@ module.exports.preload = function EnvironmentPreload(opts) {
             process.env[env.substr(envPrefix.length)] = catalog[env];
         }
     }
-
-    /* Initialize AWS SSMClient */
-
-    const ssmClient = new AWS.SSM({ apiVersion: "2014-11-06" });
-    const _getParameters = util.promisify(ssmClient.getParameters)
-        .bind(ssmClient);
 
     seneca.decorate("env", {
         get stage() {
@@ -65,7 +57,8 @@ module.exports.preload = function EnvironmentPreload(opts) {
             return true;
         }
 
-        var ret = await _getParameters({ Names: [ fullPath ] });
+        const ssmClient = await inject.SSM({ apiVersion: "2014-11-06" });
+        const ret = ssmClient.getParameters({ Names: [ fullPath ] }).promise();
 
         if (ret.Parameters[0]) {
             return true;
@@ -82,7 +75,8 @@ module.exports.preload = function EnvironmentPreload(opts) {
             return catalog[fullPath];
         }
 
-        var ret = await _getParameters({ Names: [ fullPath ] });
+        const ssmClient = await inject.SSM({ apiVersion: "2014-11-06" });
+        const ret = ssmClient.getParameters({ Names: [ fullPath ] }).promise();
 
         if (ret.Parameters[0]) {
 

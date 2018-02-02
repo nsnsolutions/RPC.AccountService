@@ -1,12 +1,11 @@
 "use strict";
 
-const AWS = require("aws-sdk");
 const ex = require("../rpc-protocol/exceptions");
 
 module.exports = function Sponsor() {
 
     const seneca = this;
-    const ddbClient = new AWS.DynamoDB.DocumentClient();
+    const inject = seneca.pin("role:dependent,inject:*");
     let sponsorTable, clientTable;
 
     seneca.rpc.addInternal("role:account,cmd:fetchSponsor", fetchSponsor);
@@ -29,6 +28,7 @@ module.exports = function Sponsor() {
 
     async function fetchSponsor(args) {
 
+        const ddbClient = await inject.DocumentClient();
         const result = await ddbClient.query({
             TableName: sponsorTable,
             IndexName: "key-index",
@@ -47,6 +47,7 @@ module.exports = function Sponsor() {
 
     async function fetchClient( args) {
 
+        const ddbClient = await inject.DocumentClient();
         const result = await ddbClient.query({
             TableName: clientTable,
             IndexName: "key-index",

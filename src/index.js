@@ -12,9 +12,11 @@ const opts = {
 
 
 const seneca = Seneca(opts)
+    .use("pin")
     .use("env", { overrides })
     .use("logger")
     .use("rpc-protocol")
+    .use("dependent")
     .use("authority")
     .use("jwt")
     .use("account")
