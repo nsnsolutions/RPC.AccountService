@@ -15,13 +15,16 @@ const seneca = Seneca(opts)
     .use("env", { overrides })
     .use("logger")
     .use("rpc-protocol")
+    .use("authority")
+    .use("jwt")
+    .use("account")
     .listen({
         type: "http",
         port: "4000",
         host: "0.0.0.0",
         path: "/account",
         protocol: "http",
-        pin: [ "role:account", "role:seneca,cmd:stats" ],
+        pin: [ "role:account,ver:*", "role:seneca,cmd:stats" ],
     });
 
 seneca.env.get("common.logLevel").then((d) => seneca.setLogLevel(d));
