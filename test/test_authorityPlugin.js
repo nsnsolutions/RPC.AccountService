@@ -27,8 +27,6 @@ describe("AuthorityPlugin v1", () => {
             .use("../src/authority")
             .use("../src/jwt");
 
-        seneca.rpc.add("role:dependent,inject:SSM", async () => ({ getParameters: () => {} }));
-
         seneca.rpc.add("role:account,cmd:fetchSponsor", async () => ({
             "code": "VEL",
             "id": "315bd1536ecf4f91848ab1c17975da27",
@@ -81,8 +79,6 @@ describe("AuthorityPlugin v1", () => {
             .use("../src/rpc-protocol")
             .use("../src/authority")
             .use("../src/jwt");
-
-        seneca.rpc.add("role:dependent,inject:SSM", async () => ({ getParameters: () => {} }));
 
         seneca.rpc.add("role:account,cmd:fetchSponsor", async () => ({
             "code": "VEL",
@@ -137,8 +133,6 @@ describe("AuthorityPlugin v1", () => {
             .use("../src/authority")
             .use("../src/jwt");
 
-        seneca.rpc.add("role:dependent,inject:SSM", async () => ({ getParameters: () => {} }));
-
         seneca.rpc.add("role:account,cmd:fetchSponsor", async () => ({
             "code": "VEL",
             "id": "315bd1536ecf4f91848ab1c17975da27",
@@ -191,8 +185,6 @@ describe("AuthorityPlugin v1", () => {
             .use("../src/rpc-protocol")
             .use("../src/authority")
             .use("../src/jwt");
-
-        seneca.rpc.add("role:dependent,inject:SSM", async () => ({ getParameters: () => {} }));
 
         seneca.rpc.add("role:account,cmd:fetchSponsor", async () => ({
             "code": "badbad",
