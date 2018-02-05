@@ -23,7 +23,7 @@ const seneca = Seneca(opts)
         type: "http",
         port: "4000",
         host: "0.0.0.0",
-        path: "/account",
+        path: `/${process.env.SERVICE_NAME || PACKAGE.name}`,
         protocol: "http",
         pin: [ "role:account,ver:*", "role:seneca,cmd:stats" ],
     });
