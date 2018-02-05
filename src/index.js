@@ -10,7 +10,6 @@ const opts = {
     serviceName: PACKAGE.name,
 };
 
-
 const seneca = Seneca(opts)
     .use("pin")
     .use("env", { overrides })
