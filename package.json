@@ -1,5 +1,5 @@
 {
-  "name": "account-service",
+  "name": "account",
   "version": "3.0.0",
   "scripts": {
     "nodemon": "nodemon",
