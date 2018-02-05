@@ -7,9 +7,8 @@ module.exports = function Dependent() { };
 module.exports.preload = function DependentPreload() {
 
     const seneca = this;
-    let dynamoClient, ssmClient;
+    let dynamoClient;
 
-    seneca.rpc.add("role:dependent,inject:SSM", getSSM);
     seneca.rpc.add("role:dependent,inject:DocumentClient", getDocumentClient);
     seneca.rpc.add("role:dependent,inject:redisClient", getRedisClient);
 
@@ -29,19 +28,10 @@ module.exports.preload = function DependentPreload() {
 
     async function shutdown() { }
 
-    async function getSSM(args) {
-
-        if (!ssmClient) {
-            ssmClient = new AWS.SSM(args.opts);
-        }
-
-        return ssmClient;
-    }
-
-    async function getDocumentClient(args) {
+    async function getDocumentClient() {
 
         if (!dynamoClient) {
-            dynamoClient = new AWS.DynamoDB.DocumentClient(args.opts);
+            dynamoClient = new AWS.DynamoDB.DocumentClient();
         }
 
         return dynamoClient;
