@@ -1,0 +1,45 @@
+{
+    "LIB": [
+        {
+            "level": "0",
+            "perms": []
+        }, {
+            "level": "10",
+            "perms": [
+                "LIB:LIST_PRODUCT",
+                "LIB:LIST_GLOBAL_PRODUCT" 
+            ]
+        }, { 
+            "level": "20",
+            "perms": [ ]
+        }, {
+            "level": "30",
+            "perms": [ 
+                "LIB:CREATE_PRODUCT",
+                "LIB:COPY_PRODUCT",
+                "LIB:DELETE_PRODUCT",
+                "LIB:EDIT_PRODUCT_PROPERTIES",
+                "LIB:LIST_INACTIVE_PRODUCT",
+                "LIB:LIST_INACTIVE_GLOBAL_PRODUCT",
+                "LIB:COPY_GLOBAL_PRODUCT_TO_CLIENT",
+                "LIB:LIST_PRODUCT_VERSION",
+                "LIB:READ_PRODUCT_VERSION",
+                "LIB:PUBLISH_PRODUCT_VERSION",
+                "LIB:EDIT_PRODUCT"
+            ] 
+        }, {
+            "level": "40", 
+            "perms": [
+                "LIB:SWITCH_CLIENT",
+                "LIB:SET_GLOBAL",
+                "LIB:CREATE_GLOBAL_PRODUCT",
+                "LIB:DELETE_GLOBAL_PRODUCT",
+                "LIB:EDIT_GLOBAL_PRODUCT_PROPERTIES",
+                "LIB:COPY_GLOBAL_PRODUCT"
+            ] 
+        }, {
+            "level": "50",
+            "perms": [ "LIB:SWITCH_SPONSOR" ]
+        }
+    ]
+}

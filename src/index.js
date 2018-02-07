@@ -19,11 +19,12 @@ const seneca = Seneca(opts)
     .use("authority")
     .use("jwt")
     .use("account")
+    .use("perms")
     .listen({
         type: "http",
         port: "4000",
         host: "0.0.0.0",
-        path: `/${process.env.SERVICE_NAME || PACKAGE.name}`,
+        path: `/${process.env.SERVICE_NAME || PACKAGE.name}/`,
         protocol: "http",
         pin: [ "role:account,ver:*", "role:seneca,cmd:stats" ],
     });
