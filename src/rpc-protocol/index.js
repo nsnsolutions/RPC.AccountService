@@ -67,6 +67,7 @@ module.exports.preload = function RpcProtocolPreload() {
     async function toResponse(result) {
         return {
             hasError: false,
+            statusCode: 200,
             result: result,
         };
     }
@@ -77,6 +78,7 @@ module.exports.preload = function RpcProtocolPreload() {
             errorName: err.name,
             message: err.message,
             code: err.code,
+            statusCode: err.code || 500,
             stack: err.stack,
         };
     }
@@ -92,6 +94,7 @@ module.exports.preload = function RpcProtocolPreload() {
         return {
             hasError: true,
             code: _err.code,
+            statusCode: _err.code || 500,
             message: _err.message,
         };
     }
