@@ -29,7 +29,7 @@ module.exports.preload = function RpcProtocolPreload() {
         args.push((request, done) => {
             fn.call(seneca, request)
                 .then((result) => toResponse(result))
-                .catch((err) => toErrorResponse(err))
+                .catch((err) => toErrorResponse(err, request.httpStatusCodes === "enable"))
                 .then((response) => done(null, response));
         });
 
@@ -67,7 +67,6 @@ module.exports.preload = function RpcProtocolPreload() {
     async function toResponse(result) {
         return {
             hasError: false,
-            statusCode: 200,
             result: result,
         };
     }
@@ -78,12 +77,11 @@ module.exports.preload = function RpcProtocolPreload() {
             errorName: err.name,
             message: err.message,
             code: err.code,
-            statusCode: err.code || 500,
             stack: err.stack,
         };
     }
 
-    async function toErrorResponse(err) {
+    async function toErrorResponse(err, setHttpStatus = false) {
 
         const _err = err instanceof RpcExceptions.RpcError
             ? err
@@ -91,12 +89,22 @@ module.exports.preload = function RpcProtocolPreload() {
 
         logError(_err);
 
-        return {
+        let ret = {
             hasError: true,
-            code: _err.code,
-            statusCode: _err.code || 500,
             message: _err.message,
         };
+
+        if (setHttpStatus) {
+            // This well cause seneca-transport to set the httpStatusCode of the response.
+            ret.statusCode = _err.code;
+
+        } else {
+            // The http status code will still be a 200 but this code will be in the reponse body.
+            ret.code = _err.code;
+
+        }
+
+        return ret;
     }
 
     function logError(err) {
